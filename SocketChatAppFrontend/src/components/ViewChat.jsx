@@ -1,0 +1,198 @@
+import React from 'react'
+import profile3 from '../assets/images/profile3.png';
+import { Input } from '@chakra-ui/react'
+import backbg from '../assets/images/backbg.png';
+import {
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverArrow,
+    PopoverCloseButton,
+    Button,
+} from '@chakra-ui/react';
+
+function ViewChat() {
+    return (
+        <>
+
+            <div className="personchats-right">
+                <div className="personchats-topprofile">
+                    <div className="myrow">
+                        <div className="my-col-11">
+                            <ul>
+                                <li>
+                                    <img src={profile3} alt="" />
+                                </li>
+                                <li>
+                                    <h5>Leo Kureshi</h5>
+                                    <span>Tyoing....</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="col-md-1">
+                            <div className="blockdiv">
+                                <Popover>
+                                    <PopoverTrigger>
+                                        <Button>
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody>
+                                            <button><i class="fa-solid fa-ban"></i> Block</button>
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
+                    <div className="mytext-left">
+                        hii
+                    </div>
+                    <div className="mytext-right">
+                        Hello
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="mytext-left">
+                        Who are you?
+                    </div>
+                    <div className="mytext-right">
+                        I am the sum of my experiences, aspirations, and beliefs.
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="mytext-left">
+                        What defines you?
+                    </div>
+                    <div className="mytext-right">
+                        My choices and how I respond to challenges define who I am.
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="mytext-left">
+                        How do you see yourself?
+                    </div>
+                    <div className="mytext-right">
+                        I see myself as a work in progress, constantly evolving and learning.
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="mytext-left">
+                        What motivates you?
+                    </div>
+                    <div className="mytext-right">
+                        The pursuit of growth and making a positive impact in the world drive me forward.
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="mytext-left">
+                        What are your strengths?
+                    </div>
+                    <div className="mytext-right">
+                        Adaptability, resilience, and empathy are among my strongest qualities.
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+                <div className="typing-input">
+                    <div className="myrow">
+                        <div className="my-col-10">
+                            <Input placeholder='Type a message' size='md' />
+                        </div>
+                        <div className="my-col-2">
+                            <i class="fa-regular fa-paper-plane"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </>
+    )
+}
+
+export default ViewChat
