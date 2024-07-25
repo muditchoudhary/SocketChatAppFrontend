@@ -4,6 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import './App.css';
 import Login from './components/login';
 import Chat from './components/chat';
+import ViewChat from './components/ViewChat';
 // import AllPerson from './components/AllPerson';
 
 
@@ -13,7 +14,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/Chat" element={<Chat />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path = "/chat/:id" element={<ViewChat/>}/>
           {/* <Route path="/Allperson" element={<AllPerson />} /> */}
         </Routes>
       </Router>

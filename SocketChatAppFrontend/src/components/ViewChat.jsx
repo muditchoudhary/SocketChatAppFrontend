@@ -1,7 +1,10 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import profile3 from '../assets/images/profile3.png';
 import { Input } from '@chakra-ui/react'
 import backbg from '../assets/images/backbg.png';
+import { BACKEND_URL } from './globalConstatnt';
+import { useParams } from 'react-router-dom';
+
 import {
     Popover,
     PopoverTrigger,
@@ -14,19 +17,59 @@ import {
 } from '@chakra-ui/react';
 
 function ViewChat() {
+    const[friend, setFriend] = useState([]);
+    const params = useParams();
+
+    const fetchSingleUser = async()=>{
+        try {
+            
+            const auth = JSON.parse(localStorage.getItem("user"));
+            // if (!auth || !auth.token) {
+            //   throw new Error("No auth token found");
+            // }
+      
+            const response = await fetch(`${BACKEND_URL}/user/singleUser/${params.id}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                // Authorization: `${auth.token}`,
+              },
+            });
+      
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+      
+            const results = await response.json();
+            
+            setFriend(results.result)
+      
+           
+          } catch (error) {
+            console.error("Fetch error: ", error);
+          } 
+    }
+
+    useEffect(()=>{
+       fetchSingleUser();
+
+    },[])
+    
     return (
         <>
 
             <div className="personchats-right">
                 <div className="personchats-topprofile">
                     <div className="myrow">
+                        
+                       
                         <div className="my-col-11">
                             <ul>
                                 <li>
                                     <img src={profile3} alt="" />
                                 </li>
                                 <li>
-                                    <h5>Leo Kureshi</h5>
+                                    <h5>{friend.userName}</h5>
                                     <span>Tyoing....</span>
                                 </li>
                             </ul>
@@ -36,14 +79,14 @@ function ViewChat() {
                                 <Popover>
                                     <PopoverTrigger>
                                         <Button>
-                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            <i className="fa-solid fa-ellipsis-vertical"></i>
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         <PopoverArrow />
                                         <PopoverCloseButton />
                                         <PopoverBody>
-                                            <button><i class="fa-solid fa-ban"></i> Block</button>
+                                            <button><i className="fa-solid fa-ban"></i> Block</button>
                                         </PopoverBody>
                                     </PopoverContent>
                                 </Popover>
@@ -60,15 +103,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -81,15 +124,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -102,15 +145,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -123,15 +166,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -144,15 +187,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -165,15 +208,15 @@ function ViewChat() {
                         <Popover>
                             <PopoverTrigger>
                                 <Button>
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverCloseButton />
                                 <PopoverBody>
-                                    <button><i class="fa-solid fa-pen-to-square"></i> Edit</button><br />
-                                    <button><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                    <button><i className="fa-solid fa-pen-to-square"></i> Edit</button><br />
+                                    <button><i className="fa-solid fa-trash-can"></i> Delete</button>
                                 </PopoverBody>
                             </PopoverContent>
                         </Popover>
@@ -185,7 +228,7 @@ function ViewChat() {
                             <Input placeholder='Type a message' size='md' />
                         </div>
                         <div className="my-col-2">
-                            <i class="fa-regular fa-paper-plane"></i>
+                            <i className="fa-regular fa-paper-plane"></i>
                         </div>
                     </div>
                 </div>

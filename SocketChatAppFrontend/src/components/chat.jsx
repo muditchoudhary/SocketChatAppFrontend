@@ -8,6 +8,8 @@ import ViewChat from './ViewChat';
 
 
 function chat() {
+    const auth = JSON.parse(localStorage.getItem("user"))
+   
     return (
         <>
 
@@ -25,7 +27,7 @@ function chat() {
                                                     <img src={profile2} alt="" />
                                                 </li>
                                                 <li>
-                                                    <h5>My Name</h5>
+                                                    <h5>{auth.user.userName}</h5>
                                                 </li>
                                             </ul>
                                         </div>
@@ -33,7 +35,7 @@ function chat() {
                                     </div>
                                 </div>
                                 <div className="my-col-9 person-chatright">
-                                    <ViewChat/>
+                                    {/* <ViewChat/> */}
                                 </div>
                             </div>
                         </div>
