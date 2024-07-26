@@ -17,9 +17,9 @@ function login() {
      e.preventDefault()
      
      
+     console.log(userName,password)
      try {
-       
-        
+      
         let response = await fetch(`${BACKEND_URL}/user/login`, {
           method: "POST",
           body: JSON.stringify({
@@ -29,19 +29,22 @@ function login() {
             "Content-Type": "application/json",
           },
         });
-        
+       
   
         const result = await response.json();
+        
   
         if (result.message=="Incorrect password") 
            return alert("Incorrect Password")
-            
-        if (result) 
-          return  localStorage.setItem("user", JSON.stringify(result));
+        console.log("four")
+        if (result) {
+           localStorage.setItem("user", JSON.stringify(result));
             
             navigate("/chat");
   
             alert("Welcome " + result.user.userName);
+            
+        }
         
             
           
@@ -61,7 +64,7 @@ function login() {
             <div className="login-card">
                 <br/>
                 <br/>
-                <form action="" onSubmit={submitLogin}>
+                <form action="" >
                     <div className="login-cardlogo">
                         <img src={logo} alt="" />
                     </div>
@@ -74,7 +77,7 @@ function login() {
                         <Input minLength={8} maxLength={10} type='password' onChange={(e)=>{setPassword(e.target.value)}} placeholder='Password' size='md' required/>
                     </div>
                     <br />
-                    <Button type='submit'>Submit</Button>
+                    <Button onClick={submitLogin}>Submit</Button>
                 </form>
             </div>
         </>
