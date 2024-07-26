@@ -16,8 +16,9 @@ function login() {
     const submitLogin = async (e) =>{
      e.preventDefault()
      
-
+     
      try {
+       
         
         let response = await fetch(`${BACKEND_URL}/user/login`, {
           method: "POST",
@@ -28,25 +29,25 @@ function login() {
             "Content-Type": "application/json",
           },
         });
-  
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        
   
         const result = await response.json();
-
-        console.log(result)
   
-        if (result) {
-          localStorage.setItem("user", JSON.stringify(result));
+        if (result.message=="Incorrect password") 
+           return alert("Incorrect Password")
+            
+        if (result) 
+          return  localStorage.setItem("user", JSON.stringify(result));
+            
+            navigate("/chat");
+  
+            alert("Welcome " + result.user.userName);
+        
+            
           
-          navigate("/chat");
+    
 
-          alert("Welcome " + result.user.userName);
-          
-        } else {
-          alert("User Not Found");
-        }
+
       } catch (error) {
         console.error("There was an error during the fetch operation:", error);
         alert("An error occurred. Please try again.");

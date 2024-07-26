@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 function AllPerson() {
     const [allUser, setAllUser] = useState([])
+   
 
     const navigate = useNavigate();
 
@@ -13,6 +14,8 @@ function AllPerson() {
         try {
             
             const auth = JSON.parse(localStorage.getItem("user"));
+            
+            
             // if (!auth || !auth.token) {
             //   throw new Error("No auth token found");
             // }
@@ -30,15 +33,19 @@ function AllPerson() {
             }
       
             const results = await response.json();
-      
-            setAllUser(results.allUser);
+            if (results.message === 'Users fetched') {
+                // Filter out the logged-in user
+                const filteredUsers = results.allUser.filter(user => user._id !== auth.user._id);
+                setAllUser(filteredUsers);
+            }
+            // setAllUser(results.allUser);
             
 
           } catch (error) {
             console.error("Fetch error: ", error);
           } 
     }
-    console.log(allUser)
+    
 
     useEffect(()=>{
         fetchUsers();
