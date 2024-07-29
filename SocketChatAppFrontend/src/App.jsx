@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import Login from "./components/Login";
 import Chat from "./components/Chat";
 import ViewChat from "./components/ViewChat";
 import NoChatSelected from "./components/NoChatSelected";
 import "./App.css";
+import Login from "./components/Login";
 
 function App() {
   return (
