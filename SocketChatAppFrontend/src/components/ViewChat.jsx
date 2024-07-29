@@ -140,6 +140,55 @@ function ViewChat() {
     // };
   }, [receiverId, currentConversationId]);
 
+  const blockUser = async (currentStatus) => {
+    try {
+      setIsLoading(true);
+      const auth = JSON.parse(localStorage.getItem("user"));
+
+      if (!auth || !auth.token) {
+        throw new Error("No auth token found");
+      }
+
+      const requestBody = {
+        block: !currentStatus,
+      };
+
+      const response = await fetch(
+        `${BACKEND_URL}/user/blockUser/${params.id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(requestBody),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${auth.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Network response was not ok: ${response.status} - ${
+            response.statusText
+          }. Error: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const result = await response.json();
+
+      // Update the state with the new block status
+      setFriend((prevFriend) => ({
+        ...prevFriend,
+        blockStatus: !currentStatus,
+      }));
+    } catch (error) {
+      console.error("Fetch error: ", error);
+      alert(`Failed to update user status. Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="personchats-right">
@@ -173,8 +222,9 @@ function ViewChat() {
                     <PopoverArrow />
                     <PopoverCloseButton color="black" />
                     <PopoverBody color="black">
-                      <button>
-                        <i className="fa-solid fa-ban"></i> Block
+                      <button onClick={() => blockUser(friend.blockStatus)}>
+                        <i className="fa-solid fa-ban"></i>{" "}
+                        {friend.blockStatus ? "Unblock" : "Block"}
                       </button>
                     </PopoverBody>
                   </PopoverContent>
@@ -183,33 +233,42 @@ function ViewChat() {
             </div>
           </div>
         </div>
-        <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
-          <Conversation
-            messages={messages}
-            isLoading={isLoading}
-            senderId={senderId}
-            receiverId={receiverId}
-            setMessages={setMessages}
-            currentConversationId={currentConversationId}
-          />
-        </div>
-        <div className="typing-input">
-          <div className="myrow">
-            <div className="my-col-10">
-              <form onSubmit={onMessageSend}>
-                <Input
-                  placeholder="Type a message"
-                  size="md"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-                <div className="my-col-2">
-                  <i className="fa-regular fa-paper-plane"></i>
-                </div>
-              </form>
+        {friend.blockStatus ? (
+          `${friend.userName} is blocked`
+        ) : (
+          <>
+            <div
+              className="chatcmn"
+              style={{ backgroundImage: `url(${backbg})` }}
+            >
+              <Conversation
+                messages={messages}
+                isLoading={isLoading}
+                senderId={senderId}
+                receiverId={receiverId}
+                setMessages={setMessages}
+                currentConversationId={currentConversationId}
+              />
             </div>
-          </div>
-        </div>
+            <div className="typing-input">
+              <div className="myrow">
+                <div className="my-col-10">
+                  <form onSubmit={onMessageSend}>
+                    <Input
+                      placeholder="Type a message"
+                      size="md"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                    />
+                    <div className="my-col-2">
+                      <i className="fa-regular fa-paper-plane"></i>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
