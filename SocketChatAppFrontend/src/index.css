@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 body {
   font-family: "Roboto", sans-serif !important;
 }
-
 
 #root {
   max-width: 100%;
@@ -43,18 +42,18 @@ body {
 }
 
 .login-card button:hover {
-  background: #478CCF;
+  background: #478ccf;
 }
 
 .login-card form {
   background: white;
-  box-shadow: 0 0 10px #F8EDE3;
+  box-shadow: 0 0 10px #f8ede3;
   padding: 30px;
   border-radius: 10px;
 }
 
 .login-card form:hover {
-  box-shadow: 0 0 10px #478CCF;
+  box-shadow: 0 0 10px #478ccf;
 }
 
 .login-card img {
@@ -121,7 +120,7 @@ body {
 
 .person-chats span {
   font-weight: 400;
-  color: #478CCF;
+  color: #478ccf;
   font-size: 12px;
 }
 
@@ -221,7 +220,7 @@ body {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 435px;
-  scrollbar-width: none;
+  scroll-behavior: auto;
 }
 
 .person-chats:hover {
@@ -278,7 +277,6 @@ body {
 /* MY CUSTOM CLASS */
 /* MY CUSTOM CLASS */
 /* MY CUSTOM CLASS */
-
 
 .mycontainer {
   width: 100%;
@@ -375,18 +373,13 @@ body {
   max-width: 100%;
 }
 
-
-
 /* responsive css */
 /* responsive css */
 /* responsive css */
 /* responsive css */
 /* responsive css */
-
-
 
 @media only screen and (max-width: 768px) {
-
   .mytext-left {
     font-size: 12px;
   }
@@ -454,12 +447,9 @@ body {
   .typing-input input {
     font-size: 12px;
   }
-
 }
 
-
 @media only screen and (max-width: 650px) {
-
   .person-search {
     margin: 15px 5px;
   }
@@ -479,12 +469,9 @@ body {
   .person-chats li {
     margin-right: 6px;
   }
-
 }
 
-
 @media only screen and (max-width: 576px) {
-
   .personchats-topprofile .my-col-11 {
     width: 50% !important;
     flex: auto;
@@ -559,12 +546,9 @@ body {
     padding: 0px 14px;
     height: 36px;
   }
-
 }
 
-
 @media only screen and (max-width: 500px) {
-
   .person-search input {
     font-size: 10px;
   }
@@ -603,18 +587,14 @@ body {
   .personchats-topprofile {
     padding: 18px 15px 19px;
   }
-
 }
-
 
 @media only screen and (max-width: 376px) {
-
   .chatleft-allperson {
     height: 524px;
-}
+  }
 
-.chatcmn {
-  height: 525px;
-}
-
+  .chatcmn {
+    height: 525px;
+  }
 }

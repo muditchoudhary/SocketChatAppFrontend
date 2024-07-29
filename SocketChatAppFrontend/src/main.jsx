@@ -1,10 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
+import ReactDOM from "react-dom/client";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+import App from "./App.jsx";
+import "./index.css";
+import { AuthContextProvider } from "./context/AuthContext.jsx";
+
+// import { MessageContextProvider } from "./context/Messagecontext.jsx";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <>
+    <AuthContextProvider>
+      <App />
+      <ToastContainer />
+    </AuthContextProvider>
+  </>
+);
