@@ -5,6 +5,7 @@ import './App.css';
 import Login from './components/login';
 import Chat from './components/chat';
 import ViewChat from './components/ViewChat';
+import PrivateComponent from './components/PrivateComponent';
 // import AllPerson from './components/AllPerson';
 
 
@@ -14,8 +15,10 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path = "/chat/:id" element={<ViewChat/>}/>
+          <Route element={<PrivateComponent/>}>
+            <Route path="/chat" element={<Chat />} />
+            <Route path = "/chat/:id" element={<ViewChat/>}/>
+          </Route>
           {/* <Route path="/Allperson" element={<AllPerson />} /> */}
         </Routes>
       </Router>

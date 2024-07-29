@@ -618,3 +618,21 @@ body {
 }
 
 }
+
+.chat-container {
+  display: flex;
+  height: 100vh;
+}
+
+.chat-left-side, .chat-right-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-click-div, .chat-content-div {
+  padding: 20px;
+  border: 1px solid #000;
+  cursor: pointer;
+}

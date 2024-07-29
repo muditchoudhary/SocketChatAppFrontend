@@ -16,8 +16,6 @@ function login() {
     const submitLogin = async (e) =>{
      e.preventDefault()
      
-     
-     console.log(userName,password)
      try {
       
         let response = await fetch(`${BACKEND_URL}/user/login`, {
@@ -32,13 +30,13 @@ function login() {
        
   
         const result = await response.json();
-        
   
         if (result.message=="Incorrect password") 
            return alert("Incorrect Password")
-        console.log("four")
+       
         if (result) {
-           localStorage.setItem("user", JSON.stringify(result));
+          localStorage.setItem("user", JSON.stringify(result));
+          
             
             navigate("/chat");
   
@@ -47,16 +45,10 @@ function login() {
         }
         
             
-          
-    
-
-
       } catch (error) {
         console.error("There was an error during the fetch operation:", error);
         alert("An error occurred. Please try again.");
       } 
-
-
     
     }
     return (

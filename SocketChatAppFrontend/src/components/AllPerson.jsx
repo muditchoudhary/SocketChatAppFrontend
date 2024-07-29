@@ -18,16 +18,19 @@ function AllPerson() {
     async function fetchUsers() {
         try {
           const auth = JSON.parse(localStorage.getItem('user'));
+          
           if (auth && auth.user) {
             setLogged(auth.user);
+            
             
             const response = await fetch(`${BACKEND_URL}/user/getUser`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.token}`, // Add your token here if needed
+                 Authorization: `${auth.token}`, // Add your token here if needed
               },
             });
+            
     
             if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -41,6 +44,7 @@ function AllPerson() {
               const filteredUsers = results.allUser.filter(user => user._id !== auth.user.id);
               
               setAllUser(filteredUsers);
+              
             } else {
               console.error('Failed to fetch users:', results.message);
             }
