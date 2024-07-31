@@ -28,9 +28,66 @@ function ViewChat() {
   const [receiverId, setReceiverId] = useState();
   const [content, setContent] = useState("");
   const [currentConversationId, setCurrentConversationId] = useState(null);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const params = useParams();
   const { onlineUsers } = useOutletContext();
+
+  const checkBlockStatus = async () => {
+    const auth = JSON.parse(localStorage.getItem("user"));
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/user/getUser/${auth.user.id}`,
+        {
+          headers: {
+            Authorization: `${auth.token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsBlocked(data.blockedUsers.includes(params.id));
+      } else {
+        console.error("Failed to fetch block status");
+      }
+    } catch (error) {
+      console.error("Failed to fetch block status", error);
+    }
+  };
+
+  useEffect(() => {
+    checkBlockStatus();
+  }, []);
+
+  const toggleBlockUser = async () => {
+    const auth = JSON.parse(localStorage.getItem("user"));
+    const userIDtoggle = params.id;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/user/blockUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${auth.token}`,
+        },
+        body: JSON.stringify({
+          userIdToToggle: userIDtoggle,
+          userId: auth.user.id,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        setIsBlocked(!isBlocked);
+      } else {
+        alert("Failed to toggle block status.");
+      }
+    } catch (error) {
+      alert("Failed to toggle block status.");
+    }
+  };
 
   async function onMessageSend(e) {
     console.log("running onMessageSend");
@@ -77,9 +134,7 @@ function ViewChat() {
   useEffect(() => {
     const fetchSingleUser = async () => {
       try {
-        // if (!auth || !auth.token) {
-        //   throw new Error("No auth token found");
-        // }
+        const auth = JSON.parse(localStorage.getItem("user"));
 
         const response = await fetch(
           `${BACKEND_URL}/user/singleUser/${params.id}`,
@@ -87,7 +142,7 @@ function ViewChat() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              // Authorization: `${auth.token}`,
+              Authorization: `${auth.token}`,
             },
           }
         );
@@ -222,9 +277,8 @@ function ViewChat() {
                     <PopoverArrow />
                     <PopoverCloseButton color="black" />
                     <PopoverBody color="black">
-                      <button onClick={() => blockUser(friend.blockStatus)}>
-                        <i className="fa-solid fa-ban"></i>{" "}
-                        {friend.blockStatus ? "Unblock" : "Block"}
+                      <button onClick={toggleBlockUser}>
+                        {isBlocked ? "Unblock User" : "Block User"}
                       </button>
                     </PopoverBody>
                   </PopoverContent>
@@ -233,42 +287,34 @@ function ViewChat() {
             </div>
           </div>
         </div>
-        {friend.blockStatus ? (
-          `${friend.userName} is blocked`
-        ) : (
-          <>
-            <div
-              className="chatcmn"
-              style={{ backgroundImage: `url(${backbg})` }}
-            >
-              <Conversation
-                messages={messages}
-                isLoading={isLoading}
-                senderId={senderId}
-                receiverId={receiverId}
-                setMessages={setMessages}
-                currentConversationId={currentConversationId}
-              />
-            </div>
-            <div className="typing-input">
-              <div className="myrow">
-                <div className="my-col-10">
-                  <form onSubmit={onMessageSend}>
-                    <Input
-                      placeholder="Type a message"
-                      size="md"
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                    />
-                    <div className="my-col-2">
-                      <i className="fa-regular fa-paper-plane"></i>
-                    </div>
-                  </form>
+
+        <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
+          <Conversation
+            messages={messages}
+            isLoading={isLoading}
+            senderId={senderId}
+            receiverId={receiverId}
+            setMessages={setMessages}
+            currentConversationId={currentConversationId}
+          />
+        </div>
+        <div className="typing-input">
+          <div className="myrow">
+            <div className="my-col-10">
+              <form onSubmit={onMessageSend}>
+                <Input
+                  placeholder="Type a message"
+                  size="md"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+                <div className="my-col-2">
+                  <i className="fa-regular fa-paper-plane"></i>
                 </div>
-              </div>
+              </form>
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </>
   );
