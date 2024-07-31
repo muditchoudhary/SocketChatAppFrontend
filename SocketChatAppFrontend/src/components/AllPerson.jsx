@@ -25,7 +25,7 @@ function AllPerson({ onlineUsers }) {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.token}`, // Add your token here if needed
+            Authorization: `${auth.token}`, // Add your token here if needed
           },
         });
 
