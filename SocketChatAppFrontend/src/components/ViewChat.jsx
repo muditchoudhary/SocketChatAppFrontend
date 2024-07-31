@@ -302,14 +302,20 @@ function ViewChat() {
           <div className="myrow">
             <div className="my-col-10">
               <form onSubmit={onMessageSend}>
-                <Input
-                  placeholder="Type a message"
-                  size="md"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-                <div className="my-col-2">
-                  <i className="fa-regular fa-paper-plane"></i>
+                <div className="myrow">
+                  <div className="my-col-10">
+                    <Input
+                      placeholder="Type a message"
+                      size="md"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                    />
+                  </div>
+                  <div className="my-col-2">
+                    <button type="submit">
+                      <i className="fa-regular fa-paper-plane"></i>
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>

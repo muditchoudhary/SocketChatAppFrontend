@@ -114,8 +114,16 @@ body {
 .chatleft-allperson {
   padding: 0;
   overflow-y: scroll;
-  height: 439px;
+  height: 420px;
   scrollbar-width: thin;
+}
+
+.person-chatright h2 {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  font-size: 18px;
+  color: #385073;
 }
 
 .person-chats span {
@@ -161,7 +169,7 @@ body {
 
 .personchats-topprofile {
   background: #102c57d4;
-  padding: 14px 15px;
+  padding: 17px 15px 17px;
   /* box-shadow: 0px 0px 4px #dedede; */
   color: #fff;
 }
@@ -219,7 +227,7 @@ body {
   padding: 30px 20px;
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 435px;
+  height: 400px;
   scroll-behavior: auto;
 }
 
