@@ -7,7 +7,13 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { Outlet, useNavigate } from "react-router-dom";
 import profile2 from "../assets/images/profile2.png";
 
+import { useMediaQuery } from "react-responsive";
+
 function Chat() {
+  const isMobileOrTable = useMediaQuery({
+    query: "(max-width: 800px)",
+  });
+
   const auth = JSON.parse(localStorage.getItem("user"));
   const { user } = useAuthContext();
   const [onlineUsers, setOnlineUsers] = useState(null);
@@ -88,7 +94,7 @@ function Chat() {
                   </div>
                 </div>
                 <div className="my-col-9 person-chatright">
-                  <Outlet context={{ onlineUsers }} />
+                  {!isMobileOrTable && <Outlet context={{ onlineUsers }} />}
                 </div>
               </div>
             </div>

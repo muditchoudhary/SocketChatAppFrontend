@@ -31,7 +31,7 @@ function ViewChat() {
   const [isBlocked, setIsBlocked] = useState(false);
 
   const params = useParams();
-  const { onlineUsers } = useOutletContext();
+  // const { onlineUsers } = useOutletContext();
 
   const checkBlockStatus = async () => {
     const auth = JSON.parse(localStorage.getItem("user"));
@@ -257,9 +257,9 @@ function ViewChat() {
                 <li>
                   <UserNameWithStatus
                     userName={friend.userName}
-                    isOnline={
-                      onlineUsers && onlineUsers[friend.id] ? true : false
-                    }
+                    // isOnline={
+                    //   onlineUsers && onlineUsers[friend.id] ? true : false
+                    // }
                   />
                   <span>Typing....</span>
                 </li>
