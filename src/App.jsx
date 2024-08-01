@@ -12,7 +12,7 @@ import { useMediaQuery } from "react-responsive";
 
 function App() {
   const isMobileOrTable = useMediaQuery({
-    query: "(max-width: 800px)",
+    query: "(max-width: 768px)",
   });
   console.log(isMobileOrTable);
   return (
