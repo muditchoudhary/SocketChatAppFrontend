@@ -240,7 +240,7 @@ function ViewChat() {
 
   return (
     <>
-      <div className="personchats-right">
+      <div className="personchats-right" style={{ backgroundImage: `url(${backbg})` }}>
         <div className="personchats-topprofile">
           <div className="myrow">
             <div className="my-col-11">
@@ -279,7 +279,6 @@ function ViewChat() {
             </div>
           </div>
         </div>
-
         <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
           {isLoading ? (
             <h1>Will show Skeleton here</h1>
