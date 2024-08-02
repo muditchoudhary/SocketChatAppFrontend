@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Input } from "@chakra-ui/react";
+import { useEffect, useState, useRef } from "react";
+import { Box, Input } from "@chakra-ui/react";
 import { useOutletContext, useParams } from "react-router-dom";
 import {
   Popover,
@@ -9,7 +9,9 @@ import {
   PopoverArrow,
   PopoverCloseButton,
   Button,
+  Spinner,
 } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 
 import backbg from "../assets/images/backbg.png";
 import profile3 from "../assets/images/profile3.png";
@@ -22,85 +24,56 @@ import UserNameWithStatus from "./UserNameWithStatus";
 
 function ViewChat() {
   const [friend, setFriend] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [senderId, setSenderId] = useState();
   const [receiverId, setReceiverId] = useState();
   const [content, setContent] = useState("");
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [sendMessageLoading, setSendMessageLoading] = useState(false);
+
+  const endMessage = useRef(null);
 
   const params = useParams();
   // const { onlineUsers } = useOutletContext();
 
-  const checkBlockStatus = async () => {
-    const auth = JSON.parse(localStorage.getItem("user"));
-    try {
-      const response = await fetch(
-        `${BACKEND_URL}/user/getUser/${auth.user.id}`,
-        {
-          headers: {
-            Authorization: `${auth.token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setIsBlocked(data.blockedUsers.includes(params.id));
-      } else {
-        console.error("Failed to fetch block status");
-      }
-    } catch (error) {
-      console.error("Failed to fetch block status", error);
-    }
-  };
-
-  useEffect(() => {
-    checkBlockStatus();
-  }, []);
-
-  const toggleBlockUser = async () => {
-    const auth = JSON.parse(localStorage.getItem("user"));
-    const userIDtoggle = params.id;
-
-    try {
-      const response = await fetch(`${BACKEND_URL}/user/blockUser`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${auth.token}`,
-        },
-        body: JSON.stringify({
-          userIdToToggle: userIDtoggle,
-          userId: auth.user.id,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        setIsBlocked(!isBlocked);
-      } else {
-        alert("Failed to toggle block status.");
-      }
-    } catch (error) {
-      alert("Failed to toggle block status.");
-    }
-  };
-
   async function onMessageSend(e) {
-    console.log("running onMessageSend");
     e.preventDefault();
-    const result = await onSendMessage(senderId, receiverId, content);
-    const messageObj = result.message;
-    socket.emit(
-      "sendMessage",
-      senderId,
-      receiverId,
-      messageObj,
-      currentConversationId
-    );
+    try {
+      setSendMessageLoading(true);
+      console.log("content is: ", content);
+      content.trim();
+      if (!content || content.trim() === "") {
+        toast.warning("Message can't be blank");
+        setSendMessageLoading(false);
+        setContent("");
+        return;
+      }
+      console.log("running onMessageSend");
+
+      await new Promise((resolve, reject) => {
+        socket.emit(
+          "sendMessage",
+          senderId,
+          receiverId,
+          content.trim(),
+          currentConversationId,
+          ({ acknowledgement }) => {
+            if (acknowledgement && acknowledgement.success) {
+              console.log("acknowledgement: ", acknowledgement);
+              setSendMessageLoading(false);
+              resolve();
+            } else {
+              reject(new Error("Failed to send message"));
+              setSendMessageLoading(false);
+            }
+          }
+        );
+      });
+    } catch (error) {
+      toast.error(error?.message);
+    }
     setContent("");
   }
 
@@ -112,16 +85,26 @@ function ViewChat() {
     setReceiverId(receiverId);
     const fetchConversations = async () => {
       try {
-        const results = await getConversations(senderId, receiverId);
-        console.log("conversations are: ", results);
-        if (results.conversation !== null) {
-          setCurrentConversationId(results.conversation._id);
-          setMessages(results.conversation.messages);
-        } else if (results.conversation === null) {
-          const result = await initConversation(senderId, receiverId);
-          setCurrentConversationId(result.newConversation._id);
-          setMessages([]);
-        }
+        setIsLoading(true);
+        await new Promise((resolve, reject) => {
+          socket.emit(
+            "wantConversations",
+            { senderId, receiverId },
+            async ({ acknowledgement }) => {
+              if (acknowledgement && acknowledgement.conversation) {
+                console.log(
+                  "fetched conversation is: ",
+                  acknowledgement.conversation
+                );
+                setCurrentConversationId(acknowledgement.conversation._id);
+                setMessages(acknowledgement.conversation.messages);
+                resolve();
+              } else {
+                reject();
+              }
+            }
+          );
+        });
       } catch (error) {
         console.error(error);
       } finally {
@@ -162,14 +145,22 @@ function ViewChat() {
     fetchSingleUser();
   }, [params.id]);
 
+  const scrollToBottom = () => {
+    endMessage.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   useEffect(() => {
     const handleGetMessage = (message, givenConversationId) => {
-      console.log(
-        "givenConversationId: ",
-        givenConversationId,
-        currentConversationId
-      );
-      if (currentConversationId === givenConversationId) {
+      console.log("givenConversationId: ", givenConversationId);
+      console.log("currentConversationId: ", currentConversationId);
+      if (
+        currentConversationId &&
+        currentConversationId === givenConversationId
+      ) {
         console.log("new message is: ", message);
         setMessages((prevMessages) => [...prevMessages, message]);
       }
@@ -177,7 +168,10 @@ function ViewChat() {
 
     const handleGetUpdateMessages = (messages, givenConversationId) => {
       // console.log("new messages are: ", messages);
-      if (currentConversationId === givenConversationId) {
+      if (
+        currentConversationId &&
+        currentConversationId === givenConversationId
+      ) {
         setMessages(messages);
       }
     };
@@ -193,7 +187,7 @@ function ViewChat() {
     //   console.log("getMessage event off and cleanup performed");
     //   console.log("getUpdateMessages event off and cleanup performed");
     // };
-  }, [receiverId, currentConversationId]);
+  }, [currentConversationId]);
 
   const blockUser = async (currentStatus) => {
     try {
@@ -277,9 +271,7 @@ function ViewChat() {
                     <PopoverArrow />
                     <PopoverCloseButton color="black" />
                     <PopoverBody color="black">
-                      <button onClick={toggleBlockUser}>
-                        {isBlocked ? "Unblock User" : "Block User"}
-                      </button>
+                      <button>Block</button>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -289,14 +281,21 @@ function ViewChat() {
         </div>
 
         <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
-          <Conversation
-            messages={messages}
-            isLoading={isLoading}
-            senderId={senderId}
-            receiverId={receiverId}
-            setMessages={setMessages}
-            currentConversationId={currentConversationId}
-          />
+          {isLoading ? (
+            <h1>Will show Skeleton here</h1>
+          ) : (
+            <>
+              <Conversation
+                messages={messages}
+                isLoading={isLoading}
+                senderId={senderId}
+                receiverId={receiverId}
+                setMessages={setMessages}
+                currentConversationId={currentConversationId}
+              />
+              <div ref={endMessage} />
+            </>
+          )}
         </div>
         <div className="typing-input">
           <div className="myrow">
@@ -309,12 +308,25 @@ function ViewChat() {
                       size="md"
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
+                      disabled={sendMessageLoading}
                     />
                   </div>
                   <div className="my-col-2">
-                    <button type="submit">
-                      <i className="fa-regular fa-paper-plane"></i>
-                    </button>
+                    {sendMessageLoading ? (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        height="100%"
+                        marginX="8px"
+                      >
+                        <Spinner size="xs" />
+                      </Box>
+                    ) : (
+                      <button type="submit">
+                        <i className="fa-regular fa-paper-plane"></i>
+                      </button>
+                    )}
                   </div>
                 </div>
               </form>

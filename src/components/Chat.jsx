@@ -26,39 +26,29 @@ function Chat() {
     navigate("/");
   };
 
+  // Effect for, when a new user login and becomes online
   useEffect(() => {
     if (user) {
       socket.connect();
-
       const handleConnect = () => {
         console.log("socket connected successfully, socket id is: ", socket.id);
-
-        socket.emit("addUser", socket.id, user.id, user.userName);
-
-        // socket.on("getUsers", (users) => {
-        //   setOnlineUsers(users);
-        //   console.log("online users are: ", users);
-        // });
+        socket.emit("addUser", user.id, user.userName);
       };
 
       socket.on("connect", handleConnect);
 
-      //   Turning off because when we shift to chat/:id the
-      //   effect cleans up i think due to that socket connection get lost
       return () => {
         socket.off("connect", handleConnect);
-
         socket.disconnect();
-
         console.log("Socket disconnected and cleanup performed");
       };
     }
   }, [user]);
 
+  // Effect for, get all online users present in server
   useEffect(() => {
     socket.on("getUsers", (users) => {
       setOnlineUsers(users);
-      console.log("online users are: ", users);
     });
   }, []);
 
