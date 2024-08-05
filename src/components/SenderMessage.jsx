@@ -25,29 +25,47 @@ function SenderMessage({
   async function onDeleteMessage(senderId, receiverId, messageId) {
     try {
       setUpdateLoading(true);
-      await new Promise((resolve, reject) => {
-        socket.emit(
-          "updateMessages",
-          messageId,
-          senderId,
-          receiverId,
-          null,
-          currentConversationId,
-          "deleted",
-          (acknowledgement) => {
-            if (acknowledgement && acknowledgement.success) {
-              resolve();
-            } else {
-              reject(new Error("Failed to delete message"));
-            }
+      // await new Promise((resolve, reject) => {
+      //   socket.emit(
+      //     "updateMessages",
+      //     messageId,
+      //     senderId,
+      //     receiverId,
+      //     null,
+      //     currentConversationId,
+      //     "deleted",
+      //     (acknowledgement) => {
+      //       if (acknowledgement && acknowledgement.success) {
+      //         resolve();
+      //       } else {
+      //         reject(new Error("Failed to delete message"));
+      //       }
+      //     }
+      //   );
+      // });
+      socket.emit(
+        "updateMessages",
+        messageId,
+        senderId,
+        receiverId,
+        null,
+        currentConversationId,
+        "deleted",
+        (acknowledgement) => {
+          if (acknowledgement && acknowledgement.success) {
+            // maybe set some loading icon or status
+            setUpdateLoading(false);
+          } else {
+            toast.error("Failed to delete message");
+            setUpdateLoading(false);
           }
-        );
-      });
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error?.message);
     } finally {
-      setUpdateLoading(false);
+      // setUpdateLoading(false);
     }
   }
 
@@ -59,29 +77,46 @@ function SenderMessage({
     }
     try {
       setUpdateLoading(true);
-      await new Promise((resolve, reject) => {
-        socket.emit(
-          "updateMessages",
-          messageId,
-          senderId,
-          receiverId,
-          editContent.trim(),
-          currentConversationId,
-          "edited",
-          (acknowledgement) => {
-            if (acknowledgement && acknowledgement.success) {
-              resolve();
-            } else {
-              reject(new Error("Failed to edit message"));
-            }
+      // await new Promise((resolve, reject) => {
+      //   socket.emit(
+      //     "updateMessages",
+      //     messageId,
+      //     senderId,
+      //     receiverId,
+      //     editContent.trim(),
+      //     currentConversationId,
+      //     "edited",
+      //     (acknowledgement) => {
+      //       if (acknowledgement && acknowledgement.success) {
+      //         resolve();
+      //       } else {
+      //         reject(new Error("Failed to edit message"));
+      //       }
+      //     }
+      //   );
+      // });
+      socket.emit(
+        "updateMessages",
+        messageId,
+        senderId,
+        receiverId,
+        editContent.trim(),
+        currentConversationId,
+        "edited",
+        (acknowledgement) => {
+          if (acknowledgement && acknowledgement.success) {
+            setUpdateLoading(false);
+          } else {
+            setUpdateLoading(false);
+            toast.error("Failed to edit message");
           }
-        );
-      });
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(error?.message);
     } finally {
-      setUpdateLoading(false);
+      // setUpdateLoading(false);
     }
   }
 
@@ -92,8 +127,9 @@ function SenderMessage({
     <>
       <div className="mytext-right">
         {message.content}
+        {!message.isDeleted && message.isEdited && " (edited)"}
         {!message.isDeleted && (
-          <Popover>
+          <Popover closeOnBlur={true}>
             <PopoverTrigger>
               <Button>
                 <i className="fa-solid fa-ellipsis-vertical"></i>
@@ -103,13 +139,9 @@ function SenderMessage({
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                <Popover>
+                <Popover closeOnBlur={true}>
                   <PopoverTrigger>
-                    <button
-                    // onClick={() =>
-                    //   onEditMessage(senderId, receiverId, message._id, content)
-                    // }
-                    >
+                    <button>
                       <i className="fa-solid fa-pen-to-square"></i> Edit
                     </button>
                   </PopoverTrigger>

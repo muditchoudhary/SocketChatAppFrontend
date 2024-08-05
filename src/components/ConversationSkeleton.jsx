@@ -1,11 +1,20 @@
+import { Skeleton, Box } from "@chakra-ui/react";
 function ConversationSkeleton() {
-  return <h1>working in progrress..</h1>;
+  return (
+    <>
+      <Box display="flex" flexDirection="column"></Box>
+
+      <SendMessageSkeleton />
+      <SendMessageSkeleton />
+      <SendMessageSkeleton />
+    </>
+  );
 }
 
 function SendMessageSkeleton() {
-  return <h1>working in progrress..</h1>;
+  return <Skeleton height="20px" />;
 }
 
 function ReceiveMessageSkeleton() {
-  return <h1>working in progrress..</h1>;
+  return <Skeleton height="20px" />;
 }

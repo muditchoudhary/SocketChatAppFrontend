@@ -32,12 +32,33 @@ function ViewChat() {
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [isBlocked, setIsBlocked] = useState(false);
   const [sendMessageLoading, setSendMessageLoading] = useState(false);
+  const [isFriendTyping, setIsFriendTyping] = useState(false);
 
   const endMessage = useRef(null);
 
   const params = useParams();
-  // const { onlineUsers } = useOutletContext();
+  const { onlineUsers } = useOutletContext();
+  let timeout;
 
+  function timeoutFunction() {
+    socket.emit("typing", {
+      senderId,
+      receiverId,
+      currentConversationId,
+      isTyping: false,
+    });
+  }
+
+  function handleTypingStatus(e) {
+    socket.emit("typing", {
+      senderId,
+      receiverId,
+      currentConversationId,
+      isTyping: true,
+    });
+    clearTimeout(timeout);
+    timeout = setTimeout(timeoutFunction, 3000);
+  }
   async function onMessageSend(e) {
     e.preventDefault();
     try {
@@ -52,25 +73,41 @@ function ViewChat() {
       }
       console.log("running onMessageSend");
 
-      await new Promise((resolve, reject) => {
-        socket.emit(
-          "sendMessage",
-          senderId,
-          receiverId,
-          content.trim(),
-          currentConversationId,
-          ({ acknowledgement }) => {
-            if (acknowledgement && acknowledgement.success) {
-              console.log("acknowledgement: ", acknowledgement);
-              setSendMessageLoading(false);
-              resolve();
-            } else {
-              reject(new Error("Failed to send message"));
-              setSendMessageLoading(false);
-            }
+      // await new Promise((resolve, reject) => {
+      //   socket.emit(
+      //     "sendMessage",
+      //     senderId,
+      //     receiverId,
+      //     content.trim(),
+      //     currentConversationId,
+      //     ({ acknowledgement }) => {
+      //       if (acknowledgement && acknowledgement.success) {
+      //         console.log("acknowledgement: ", acknowledgement);
+      //         setSendMessageLoading(false);
+      //         resolve();
+      //       } else {
+      //         reject(new Error("Failed to send message"));
+      //         setSendMessageLoading(false);
+      //       }
+      //     }
+      //   );
+      // });
+      socket.emit(
+        "sendMessage",
+        senderId,
+        receiverId,
+        content.trim(),
+        currentConversationId,
+        ({ acknowledgement }) => {
+          if (acknowledgement && acknowledgement.success) {
+            console.log("acknowledgement: ", acknowledgement);
+            setSendMessageLoading(false);
+          } else {
+            toast.error("Failed to send message");
+            setSendMessageLoading(false);
           }
-        );
-      });
+        }
+      );
     } catch (error) {
       toast.error(error?.message);
     }
@@ -86,29 +123,44 @@ function ViewChat() {
     const fetchConversations = async () => {
       try {
         setIsLoading(true);
-        await new Promise((resolve, reject) => {
-          socket.emit(
-            "wantConversations",
-            { senderId, receiverId },
-            async ({ acknowledgement }) => {
-              if (acknowledgement && acknowledgement.conversation) {
-                console.log(
-                  "fetched conversation is: ",
-                  acknowledgement.conversation
-                );
-                setCurrentConversationId(acknowledgement.conversation._id);
-                setMessages(acknowledgement.conversation.messages);
-                resolve();
-              } else {
-                reject();
-              }
+        // await new Promise((resolve, reject) => {
+        //   socket.emit(
+        //     "wantConversations",
+        //     { senderId, receiverId },
+        //     ({ acknowledgement }) => {
+        //       if (acknowledgement && acknowledgement.conversation) {
+        //         console.log(
+        //           "fetched conversation is: ",
+        //           acknowledgement.conversation
+        //         );
+        //         setCurrentConversationId(acknowledgement.conversation._id);
+        //         setMessages(acknowledgement.conversation.messages);
+        //         resolve();
+        //       } else {
+        //         reject();
+        //       }
+        //     }
+        //   );
+        // });
+        socket.emit(
+          "wantConversations",
+          { senderId, receiverId },
+          ({ acknowledgement }) => {
+            if (acknowledgement && acknowledgement.conversation) {
+              console.log(
+                "fetched conversation is: ",
+                acknowledgement.conversation
+              );
+              setCurrentConversationId(acknowledgement.conversation._id);
+              setMessages(acknowledgement.conversation.messages);
+              setIsLoading(false);
             }
-          );
-        });
+          }
+        );
       } catch (error) {
         console.error(error);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
     fetchConversations();
@@ -175,8 +227,17 @@ function ViewChat() {
         setMessages(messages);
       }
     };
+
+    const userTyping = ({ isTyping, givenConversationId }) => {
+      console.log("current conversation id is: ", currentConversationId);
+      console.log("userTyping arguments are: ", isTyping, givenConversationId);
+      if (currentConversationId === givenConversationId) {
+        setIsFriendTyping(isTyping);
+      }
+    };
     socket.on("getMessage", handleGetMessage);
     socket.on("getUpdateMessages", handleGetUpdateMessages);
+    socket.on("userTyping", userTyping);
 
     // Getting some weird bugs because of clean ups
     // I still don't understand why
@@ -251,11 +312,11 @@ function ViewChat() {
                 <li>
                   <UserNameWithStatus
                     userName={friend.userName}
-                    // isOnline={
-                    //   onlineUsers && onlineUsers[friend.id] ? true : false
-                    // }
+                    isOnline={
+                      onlineUsers && onlineUsers[friend.id] ? true : false
+                    }
                   />
-                  <span>Typing....</span>
+                  <span>{isFriendTyping ? "Typing...." : " "}</span>
                 </li>
               </ul>
             </div>
@@ -282,7 +343,7 @@ function ViewChat() {
 
         <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
           {isLoading ? (
-            <h1>Will show Skeleton here</h1>
+            <h1>Loading...</h1>
           ) : (
             <>
               <Conversation
@@ -309,6 +370,7 @@ function ViewChat() {
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
                       disabled={sendMessageLoading}
+                      onKeyUp={handleTypingStatus}
                     />
                   </div>
                   <div className="my-col-2">

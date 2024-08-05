@@ -83,9 +83,9 @@ function AllPerson({ onlineUsers }) {
 
   return (
     <>
-      <div className="person-search">
+      {/* <div className="person-search">
         <Input placeholder="Search Person" size="md" />
-      </div>
+      </div> */}
       <div className="chatleft-allperson">
         {!allUser || allUser.length === 0 ? (
           <Box boxShadow="lg" bg="white" display="flex" flexDirection="column">
@@ -122,7 +122,6 @@ function AllPerson({ onlineUsers }) {
                       onlineUsers && onlineUsers[item._id] ? true : false
                     }
                   />
-                  <span>seen</span>
                 </li>
               </ul>
             </div>

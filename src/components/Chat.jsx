@@ -84,7 +84,9 @@ function Chat() {
                   </div>
                 </div>
                 <div className="my-col-9 person-chatright">
-                  {!isMobileOrTable && <Outlet context={{ onlineUsers }} />}
+                  {/* RESPONSIVE LOGIC NOT ABLE TO COMPLETE MAY BE LETTER */}
+                  {/* {!isMobileOrTable && <Outlet context={{ onlineUsers }} />} */}
+                  <Outlet context={{ onlineUsers }} />
                 </div>
               </div>
             </div>

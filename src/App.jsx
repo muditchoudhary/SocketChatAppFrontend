@@ -21,7 +21,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<PrivateComponent />}>
-            {isMobileOrTable && (
+            <Route path="/chat" element={<Chat />}>
+              <Route index element={<NoChatSelected />} />
+              <Route path="/chat/:id" element={<ViewChat />} />
+            </Route>
+            {/* RESPONSIVE LOGIC NOT ABLE TO COMPLETE MAY BE LETTER */}
+            {/* {isMobileOrTable && (
               <>
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:id" element={<ViewChat />} />
@@ -34,7 +39,7 @@ function App() {
                   <Route path="/chat/:id" element={<ViewChat />} />
                 </Route>
               </>
-            )}
+            )} */}
           </Route>
 
           <Route path="/chat" element={<Chat />} />
