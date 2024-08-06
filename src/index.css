@@ -89,7 +89,7 @@ body {
 
 .chatleft-myprofile {
   background: #102c57d4;
-  padding: 18px 15px;
+  padding: 16.4px 15px;
   box-shadow: 0px 0px 4px #dedede;
   color: #fff;
 }
@@ -113,8 +113,8 @@ body {
 
 .chatleft-allperson {
   padding: 0;
-  overflow-y: scroll;
-  height: 420px;
+  overflow-y: auto;
+  height: 86vh;
   scrollbar-width: thin;
 }
 
@@ -181,7 +181,7 @@ body {
 .mytext-right {
   box-shadow: 0 0 10px #d1d1d1;
   padding: 8px 22px 8px 16px;
-  border-radius: 50px 50px 0px 50px;
+  border-radius: 20px 20px 0px 20px;
   width: fit-content;
   display: flex;
   justify-content: flex-end;
@@ -202,7 +202,7 @@ body {
   text-align: left;
   box-shadow: 0 0 10px #e4e4e4;
   padding: 8px 22px 8px 16px;
-  border-radius: 50px 50px 50px 0px;
+  border-radius: 20px 20px 20px 0px;
   width: fit-content;
   margin-bottom: 15px;
   background: #fff;
@@ -227,7 +227,7 @@ body {
   padding: 30px 20px;
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 400px;
+  height: 74vh;
   scroll-behavior: auto;
 }
 
@@ -258,7 +258,7 @@ body {
 }
 
 .typing-input .my-col-10 {
-  padding-right: 0;
+  padding: 0;
 }
 
 .typing-input .my-col-2 {
@@ -381,13 +381,62 @@ body {
   max-width: 100%;
 }
 
+.chatcmn {
+  height: 74vh;
+}
+
+.chatleft-allperson {
+  height: 86vh;
+}
+
 /* responsive css */
 /* responsive css */
 /* responsive css */
 /* responsive css */
 /* responsive css */
 
-@media only screen and (max-width: 768px) {
+
+
+@media only screen and (max-width: 1024px) {
+  .chatleft-allperson {
+    height: 94vh;
+  }
+
+  .chatcmn {
+    height: 88vh;
+  }
+}
+
+@media only screen and (max-width: 854px) {
+  .chatcmn {
+    height: 86vh;
+  }
+
+  .chatleft-allperson {
+    height: 93vh;
+  }
+}
+
+@media only screen and (max-width: 821px) {
+  .chatcmn {
+    height: 87vh;
+  }
+
+  .chatcmn {
+    height: 87vh;
+  }
+}
+
+@media only screen and (max-width: 769px) {
+
+  .chatleft-allperson {
+    height: 92vh;
+  }
+
+  .chatcmn {
+    height: 85vh;
+  }
+
   .mytext-left {
     font-size: 12px;
   }
@@ -431,10 +480,6 @@ body {
     height: 36px;
   }
 
-  .personchats-topprofile {
-    padding: 13px 15px 14px;
-  }
-
   .personchats-topprofile img {
     width: 40px;
     height: 40px;
@@ -457,13 +502,23 @@ body {
   }
 }
 
+@media only screen and (max-width: 700px) {
+  .chatcmn {
+    height: 74vh;
+  }
+
+  .chatleft-allperson {
+    height: 86vh;
+  }
+
+  .typing-input i.fa-regular.fa-paper-plane {
+    padding: 1.5px 20px 18px;
+  }
+}
+
 @media only screen and (max-width: 650px) {
   .person-search {
     margin: 15px 5px;
-  }
-
-  .chatleft-myprofile {
-    padding: 18px 5px;
   }
 
   .person-chats {
@@ -510,10 +565,6 @@ body {
 
   .personchats-topprofile li {
     margin-right: 8px;
-  }
-
-  .personchats-topprofile {
-    padding: 15px 15px 15px;
   }
 
   .mytext-left {
@@ -591,18 +642,76 @@ body {
   .chatleft-myprofile {
     padding: 10px 5px 5px;
   }
+}
+
+@media only screen and (max-width: 431px) {
+  .chatleft-allperson {
+    height: 86vh;
+  }
+
+  .chatcmn {
+    height: 85vh;
+  }
 
   .personchats-topprofile {
-    padding: 18px 15px 19px;
+    padding: 19px 15px 20px;
+  }
+}
+
+@media only screen and (max-width: 414px) {
+  .personchats-topprofile {
+    padding: 19px 15px 20px;
+  }
+
+  .chatleft-allperson {
+    height: 91vh;
+  }
+
+  .chatcmn {
+    height: 84vh;
+  }
+
+  .typing-input .myrow {
+    justify-content: center !important;
+  }
+}
+
+@media only screen and (max-width: 391px) {
+  .chatcmn {
+    height: 83vh;
   }
 }
 
 @media only screen and (max-width: 376px) {
-  .chatleft-allperson {
-    height: 524px;
+  .personchats-topprofile {
+    padding: 19px 15px 20px;
   }
 
   .chatcmn {
-    height: 525px;
+    height: 78vh;
+  }
+
+  .chatleft-allperson {
+    height: 88vh;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  .chatleft-allperson {
+    height: 89vh;
+  }
+
+  .chatcmn {
+    height: 80vh;
+  }
+}
+
+@media only screen and (max-width: 344px) {
+  .chatleft-allperson {
+    height: 91vh;
+  }
+
+  .chatcmn {
+    height: 83vh;
   }
 }
