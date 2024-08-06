@@ -4,7 +4,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 import App from "./App.jsx";
 import "./index.css";
-import "./responsive.css"
 import { AuthContextProvider } from "./context/AuthContext.jsx";
 import { GlobalLoadingContextProvider } from "./context/GlobalLoadingContext.jsx";
 import GlobalLoader from "./components/GlobalLoader.jsx";
