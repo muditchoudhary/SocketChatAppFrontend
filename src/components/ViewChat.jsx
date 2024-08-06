@@ -22,6 +22,7 @@ import Conversation from "./Conversation";
 import { onSendMessage } from "../apis/conversationApis";
 import { socket } from "../socket";
 import UserNameWithStatus from "./UserNameWithStatus";
+import { useGlobalLoadingContext } from "../hooks/useGlobalLoadingContext";
 
 function ViewChat() {
   const [friend, setFriend] = useState({});
@@ -34,6 +35,7 @@ function ViewChat() {
   const [isBlocked, setIsBlocked] = useState(false);
   const [sendMessageLoading, setSendMessageLoading] = useState(false);
   const [isFriendTyping, setIsFriendTyping] = useState(false);
+  const [isBlockPopOverOpen, setIsBlockPopOverOpen] = useState(false);
 
   const endMessage = useRef(null);
 
@@ -46,21 +48,23 @@ function ViewChat() {
       senderId,
       receiverId,
       currentConversationId,
-      isTyping: true,
+      isTyping: false,
     });
   }
 
   const auth = JSON.parse(localStorage.getItem("user"));
+  const { dispatch } = useGlobalLoadingContext();
 
   const toggleBlockUser = () => {
+    dispatch({ type: "LOADING", payload: true });
     try {
       socket.emit(
         "toggleBlock",
         { senderId: senderId, receiverId: receiverId },
         ({ acknowledgement }) => {
-          // if (acknowledgement.success === true) {
-          //to be done later
-          // }
+          if (acknowledgement.success === true) {
+            dispatch({ type: "NOT_LOADING", payload: false });
+          }
         }
       );
     } catch (error) {
@@ -76,7 +80,7 @@ function ViewChat() {
       isTyping: true,
     });
     clearTimeout(timeout);
-    timeout = setTimeout(timeoutFunction, 3000);
+    timeout = setTimeout(timeoutFunction, 1000);
   }
   async function onMessageSend(e) {
     e.preventDefault();
@@ -168,6 +172,8 @@ function ViewChat() {
     };
 
     const userTyping = ({ isTyping, givenConversationId }) => {
+      console.log("current conversation id is: ", currentConversationId);
+      console.log("userTyping arguments are: ", isTyping, givenConversationId);
       if (currentConversationId === givenConversationId) {
         setIsFriendTyping(isTyping);
       }
@@ -236,28 +242,27 @@ function ViewChat() {
                   )}
                 </li>
                 <li>
-                  <>
-                    {console.log("friend: ", friend)}
-                    {console.log("userBlockList: ", userBlockList)}
-
-                    <UserNameWithStatus
-                      userName={friend.userName}
-                      isOnline={
-                        onlineUsers && onlineUsers[friend._id] ? true : false
-                      }
-                      recieverId={friend._id}
-                      recieverBlockUsers={friend.blockedUsers}
-                      userBlockList={userBlockList}
-                    />
-                  </>
+                  <UserNameWithStatus
+                    userName={friend.userName}
+                    isOnline={
+                      onlineUsers && onlineUsers[friend._id] ? true : false
+                    }
+                    recieverId={friend._id}
+                    recieverBlockUsers={friend.blockedUsers}
+                    userBlockList={userBlockList}
+                  />
+                  <span>{isFriendTyping ? "Typing...." : " "}</span>
                 </li>
               </ul>
             </div>
             <div className="col-md-1">
               <div className="blockdiv">
-                <Popover>
+                <Popover
+                  isOpen={isBlockPopOverOpen}
+                  onClose={() => setIsBlockPopOverOpen(false)}
+                >
                   <PopoverTrigger>
-                    <Button>
+                    <Button onClick={() => setIsBlockPopOverOpen(true)}>
                       <i className="fa-solid fa-ellipsis-vertical"></i>
                     </Button>
                   </PopoverTrigger>
@@ -265,7 +270,12 @@ function ViewChat() {
                     <PopoverArrow />
                     <PopoverCloseButton color="black" />
                     <PopoverBody color="black">
-                      <button onClick={toggleBlockUser}>
+                      <button
+                        onClick={() => {
+                          toggleBlockUser();
+                          setIsBlockPopOverOpen(false);
+                        }}
+                      >
                         {isBlocked ? "Unblock User" : "Block User"}
                       </button>
                     </PopoverBody>

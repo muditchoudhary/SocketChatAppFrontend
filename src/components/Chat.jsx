@@ -8,6 +8,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import profile2 from "../assets/images/profile2.png";
 
 import { useMediaQuery } from "react-responsive";
+import { useGlobalLoadingContext } from "../hooks/useGlobalLoadingContext";
 
 function Chat() {
   const isMobileOrTable = useMediaQuery({
@@ -21,6 +22,7 @@ function Chat() {
   const { user } = useAuthContext();
   const [onlineUsers, setOnlineUsers] = useState(null);
   const { dispatch } = useAuthContext();
+  const { dispatch: globalLoadingDispatch } = useGlobalLoadingContext();
   const navigate = useNavigate();
 
   const onLogOut = () => {

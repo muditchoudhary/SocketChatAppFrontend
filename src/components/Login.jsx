@@ -7,6 +7,7 @@ import logo from "../assets/images/logo.png";
 import { BACKEND_URL } from "./globalConstatnt";
 import { toast } from "react-toastify";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { useGlobalLoadingContext } from "../hooks/useGlobalLoadingContext";
 
 function Login() {
   const [userName, setUserName] = useState("");
@@ -14,11 +15,13 @@ function Login() {
 
   const navigate = useNavigate();
   const { dispatch } = useAuthContext();
+  const { dispatch: globalLoadingDispatch } = useGlobalLoadingContext();
 
   const submitLogin = async (e) => {
     e.preventDefault();
 
     try {
+      globalLoadingDispatch({ type: "LOADING", payload: true });
       let response = await fetch(`${BACKEND_URL}/user/login`, {
         method: "POST",
         body: JSON.stringify({
@@ -47,6 +50,8 @@ function Login() {
     } catch (error) {
       console.error("There was an error during the fetch operation:", error);
       toast.error("An error occurred. Please try again.");
+    } finally {
+      globalLoadingDispatch({ type: "LOADING", payload: false });
     }
   };
   return (

@@ -22,27 +22,15 @@ function SenderMessage({
   receiverId,
   currentConversationId,
 }) {
+  const [editContent, setEditContent] = useState(message.content);
+  const [updateLoading, setUpdateLoading] = useState(true);
+  const [isEditPopOverOpen, setIsEditPopOverOpen] = useState(false);
+  const [isMsgPopOverOpen, setIsMsgPopOverOpen] = useState(false);
+
   async function onDeleteMessage(senderId, receiverId, messageId) {
     try {
       setUpdateLoading(true);
-      // await new Promise((resolve, reject) => {
-      //   socket.emit(
-      //     "updateMessages",
-      //     messageId,
-      //     senderId,
-      //     receiverId,
-      //     null,
-      //     currentConversationId,
-      //     "deleted",
-      //     (acknowledgement) => {
-      //       if (acknowledgement && acknowledgement.success) {
-      //         resolve();
-      //       } else {
-      //         reject(new Error("Failed to delete message"));
-      //       }
-      //     }
-      //   );
-      // });
+
       socket.emit(
         "updateMessages",
         messageId,
@@ -77,24 +65,7 @@ function SenderMessage({
     }
     try {
       setUpdateLoading(true);
-      // await new Promise((resolve, reject) => {
-      //   socket.emit(
-      //     "updateMessages",
-      //     messageId,
-      //     senderId,
-      //     receiverId,
-      //     editContent.trim(),
-      //     currentConversationId,
-      //     "edited",
-      //     (acknowledgement) => {
-      //       if (acknowledgement && acknowledgement.success) {
-      //         resolve();
-      //       } else {
-      //         reject(new Error("Failed to edit message"));
-      //       }
-      //     }
-      //   );
-      // });
+
       socket.emit(
         "updateMessages",
         messageId,
@@ -117,11 +88,9 @@ function SenderMessage({
       toast.error(error?.message);
     } finally {
       // setUpdateLoading(false);
+      setIsEditPopOverOpen(false);
     }
   }
-
-  const [editContent, setEditContent] = useState(message.content);
-  const [updateLoading, setUpdateLoading] = useState(true);
 
   return (
     <>
@@ -129,9 +98,12 @@ function SenderMessage({
         {message.content}
         {!message.isDeleted && message.isEdited && " (edited)"}
         {!message.isDeleted && (
-          <Popover closeOnBlur={true}>
+          <Popover
+            isOpen={isMsgPopOverOpen}
+            onClose={() => setIsMsgPopOverOpen(false)}
+          >
             <PopoverTrigger>
-              <Button>
+              <Button onClick={() => setIsMsgPopOverOpen(true)}>
                 <i className="fa-solid fa-ellipsis-vertical"></i>
               </Button>
             </PopoverTrigger>
@@ -139,9 +111,15 @@ function SenderMessage({
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverBody>
-                <Popover closeOnBlur={true}>
+                <Popover
+                  isOpen={isEditPopOverOpen}
+                  onClose={() => {
+                    setIsEditPopOverOpen(false),
+                      setEditContent(message.content);
+                  }}
+                >
                   <PopoverTrigger>
-                    <button>
+                    <button onClick={() => setIsEditPopOverOpen(true)}>
                       <i className="fa-solid fa-pen-to-square"></i> Edit
                     </button>
                   </PopoverTrigger>
@@ -173,9 +151,10 @@ function SenderMessage({
                 </Popover>
                 <br />
                 <button
-                  onClick={() =>
-                    onDeleteMessage(senderId, receiverId, message._id)
-                  }
+                  onClick={() => {
+                    onDeleteMessage(senderId, receiverId, message._id);
+                    setIsMsgPopOverOpen(false);
+                  }}
                 >
                   <i className="fa-solid fa-trash-can"></i> Delete
                 </button>
