@@ -14,6 +14,9 @@ function Chat() {
     query: "(max-width: 800px)",
   });
 
+  const [allUser, setAllUser] = useState([]);
+  const [userBlockList, setUserBlockList] = useState([]);
+
   const auth = JSON.parse(localStorage.getItem("user"));
   const { user } = useAuthContext();
   const [onlineUsers, setOnlineUsers] = useState(null);
@@ -26,12 +29,30 @@ function Chat() {
     navigate("/");
   };
 
+  useEffect(() => {
+    const handleUserBlockList = ({ fetchUserBlockArray }) => {
+      setUserBlockList(fetchUserBlockArray);
+    };
+
+    socket.on("fetchUserBlockList", handleUserBlockList);
+  });
+
+  useEffect(() => {
+    const auth = JSON.parse(localStorage.getItem("user"));
+    socket.on("getAllUsers", ({ fetchedAllUsers }) => {
+      // Filter out the logged-in user
+      const filteredUsers = fetchedAllUsers.filter(
+        (user) => user._id !== auth.user.id
+      );
+      setAllUser(filteredUsers);
+    });
+  }, []);
+
   // Effect for, when a new user login and becomes online
   useEffect(() => {
     if (user) {
       socket.connect();
       const handleConnect = () => {
-        console.log("socket connected successfully, socket id is: ", socket.id);
         socket.emit("addUser", user.id, user.userName);
       };
 
@@ -40,7 +61,6 @@ function Chat() {
       return () => {
         socket.off("connect", handleConnect);
         socket.disconnect();
-        console.log("Socket disconnected and cleanup performed");
       };
     }
   }, [user]);
@@ -80,13 +100,17 @@ function Chat() {
                         </MenuList>
                       </Menu>
                     </div>
-                    <AllPerson onlineUsers={onlineUsers} />
+                    <AllPerson
+                      onlineUsers={onlineUsers}
+                      allUser={allUser}
+                      userBlockList={userBlockList}
+                    />
                   </div>
                 </div>
                 <div className="my-col-9 person-chatright">
                   {/* RESPONSIVE LOGIC NOT ABLE TO COMPLETE MAY BE LETTER */}
                   {/* {!isMobileOrTable && <Outlet context={{ onlineUsers }} />} */}
-                  <Outlet context={{ onlineUsers }} />
+                  <Outlet context={{ onlineUsers, allUser, userBlockList }} />
                 </div>
               </div>
             </div>

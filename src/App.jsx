@@ -14,7 +14,7 @@ function App() {
   const isMobileOrTable = useMediaQuery({
     query: "(max-width: 800px)",
   });
-  console.log(isMobileOrTable);
+
   return (
     <ChakraProvider>
       <Router>

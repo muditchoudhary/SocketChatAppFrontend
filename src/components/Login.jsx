@@ -18,7 +18,6 @@ function Login() {
   const submitLogin = async (e) => {
     e.preventDefault();
 
-    console.log(userName, password);
     try {
       let response = await fetch(`${BACKEND_URL}/user/login`, {
         method: "POST",

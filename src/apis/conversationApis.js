@@ -1,6 +1,5 @@
 import { BACKEND_URL } from "../components/globalConstatnt";
 export async function getConversations(senderId, receiverId) {
-  console.log("getConversatios areguments are: ", senderId, receiverId);
   try {
     const queryParams = new URLSearchParams({
       senderId,
@@ -117,13 +116,6 @@ export async function deleteMessage(senderId, receiverId, messageId) {
 
 export async function editMessage(senderId, receiverId, messageId, content) {
   try {
-    console.log(
-      "editMessage arguments are:",
-      senderId,
-      receiverId,
-      messageId,
-      content
-    );
     const response = await fetch(`${BACKEND_URL}/conversation/edit-message`, {
       method: "PUT",
       body: JSON.stringify({

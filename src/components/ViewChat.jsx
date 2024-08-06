@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 import backbg from "../assets/images/backbg.png";
 import profile3 from "../assets/images/profile3.png";
+import blockProfile from "../assets/images/blockProfile.jpg";
 import { BACKEND_URL } from "./globalConstatnt";
 import { getConversations, initConversation } from "../apis/conversationApis";
 import Conversation from "./Conversation";
@@ -23,7 +24,7 @@ import { socket } from "../socket";
 import UserNameWithStatus from "./UserNameWithStatus";
 
 function ViewChat() {
-  const [friend, setFriend] = useState([]);
+  const [friend, setFriend] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   const [senderId, setSenderId] = useState();
@@ -37,7 +38,7 @@ function ViewChat() {
   const endMessage = useRef(null);
 
   const params = useParams();
-  const { onlineUsers } = useOutletContext();
+  const { onlineUsers, allUser, userBlockList } = useOutletContext();
   let timeout;
 
   function timeoutFunction() {
@@ -45,9 +46,27 @@ function ViewChat() {
       senderId,
       receiverId,
       currentConversationId,
-      isTyping: false,
+      isTyping: true,
     });
   }
+
+  const auth = JSON.parse(localStorage.getItem("user"));
+
+  const toggleBlockUser = () => {
+    try {
+      socket.emit(
+        "toggleBlock",
+        { senderId: senderId, receiverId: receiverId },
+        ({ acknowledgement }) => {
+          // if (acknowledgement.success === true) {
+          //to be done later
+          // }
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   function handleTypingStatus(e) {
     socket.emit("typing", {
@@ -63,7 +82,16 @@ function ViewChat() {
     e.preventDefault();
     try {
       setSendMessageLoading(true);
-      console.log("content is: ", content);
+
+      if (
+        userBlockList?.includes(receiverId) ||
+        friend.blockedUsers?.includes(auth.user.id)
+      ) {
+        toast.warning("Blocked can't send message");
+        setSendMessageLoading(false);
+        setContent("");
+        return;
+      }
       content.trim();
       if (!content || content.trim() === "") {
         toast.warning("Message can't be blank");
@@ -71,27 +99,7 @@ function ViewChat() {
         setContent("");
         return;
       }
-      console.log("running onMessageSend");
 
-      // await new Promise((resolve, reject) => {
-      //   socket.emit(
-      //     "sendMessage",
-      //     senderId,
-      //     receiverId,
-      //     content.trim(),
-      //     currentConversationId,
-      //     ({ acknowledgement }) => {
-      //       if (acknowledgement && acknowledgement.success) {
-      //         console.log("acknowledgement: ", acknowledgement);
-      //         setSendMessageLoading(false);
-      //         resolve();
-      //       } else {
-      //         reject(new Error("Failed to send message"));
-      //         setSendMessageLoading(false);
-      //       }
-      //     }
-      //   );
-      // });
       socket.emit(
         "sendMessage",
         senderId,
@@ -100,7 +108,6 @@ function ViewChat() {
         currentConversationId,
         ({ acknowledgement }) => {
           if (acknowledgement && acknowledgement.success) {
-            console.log("acknowledgement: ", acknowledgement);
             setSendMessageLoading(false);
           } else {
             toast.error("Failed to send message");
@@ -123,34 +130,11 @@ function ViewChat() {
     const fetchConversations = async () => {
       try {
         setIsLoading(true);
-        // await new Promise((resolve, reject) => {
-        //   socket.emit(
-        //     "wantConversations",
-        //     { senderId, receiverId },
-        //     ({ acknowledgement }) => {
-        //       if (acknowledgement && acknowledgement.conversation) {
-        //         console.log(
-        //           "fetched conversation is: ",
-        //           acknowledgement.conversation
-        //         );
-        //         setCurrentConversationId(acknowledgement.conversation._id);
-        //         setMessages(acknowledgement.conversation.messages);
-        //         resolve();
-        //       } else {
-        //         reject();
-        //       }
-        //     }
-        //   );
-        // });
         socket.emit(
           "wantConversations",
           { senderId, receiverId },
           ({ acknowledgement }) => {
             if (acknowledgement && acknowledgement.conversation) {
-              console.log(
-                "fetched conversation is: ",
-                acknowledgement.conversation
-              );
               setCurrentConversationId(acknowledgement.conversation._id);
               setMessages(acknowledgement.conversation.messages);
               setIsLoading(false);
@@ -159,67 +143,22 @@ function ViewChat() {
         );
       } catch (error) {
         console.error(error);
-      } finally {
-        // setIsLoading(false);
       }
     };
     fetchConversations();
   }, [params.id]);
 
   useEffect(() => {
-    const fetchSingleUser = async () => {
-      try {
-        const auth = JSON.parse(localStorage.getItem("user"));
-
-        const response = await fetch(
-          `${BACKEND_URL}/user/singleUser/${params.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `${auth.token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const results = await response.json();
-
-        setFriend(results.result);
-      } catch (error) {
-        console.error("Fetch error: ", error);
-      }
-    };
-
-    fetchSingleUser();
-  }, [params.id]);
-
-  const scrollToBottom = () => {
-    endMessage.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
     const handleGetMessage = (message, givenConversationId) => {
-      console.log("givenConversationId: ", givenConversationId);
-      console.log("currentConversationId: ", currentConversationId);
       if (
         currentConversationId &&
         currentConversationId === givenConversationId
       ) {
-        console.log("new message is: ", message);
         setMessages((prevMessages) => [...prevMessages, message]);
       }
     };
 
     const handleGetUpdateMessages = (messages, givenConversationId) => {
-      // console.log("new messages are: ", messages);
       if (
         currentConversationId &&
         currentConversationId === givenConversationId
@@ -229,15 +168,34 @@ function ViewChat() {
     };
 
     const userTyping = ({ isTyping, givenConversationId }) => {
-      console.log("current conversation id is: ", currentConversationId);
-      console.log("userTyping arguments are: ", isTyping, givenConversationId);
       if (currentConversationId === givenConversationId) {
         setIsFriendTyping(isTyping);
       }
     };
+
+    const handleSingleUser = ({ getSingleUserDetails }) => {
+      setFriend(getSingleUserDetails);
+    };
+
     socket.on("getMessage", handleGetMessage);
     socket.on("getUpdateMessages", handleGetUpdateMessages);
     socket.on("userTyping", userTyping);
+
+    // socket.on("fetchUserBlockList", handleUserBlockList);
+    socket.on("getSingleUser", handleSingleUser);
+
+    if (receiverId) {
+      socket.emit(
+        "singleUser",
+        { receiverId: receiverId, senderId: senderId },
+        ({ acknowledgement }) => {
+          // if (acknowledgement.success === true) {
+          //   console.log("trye");
+          //to done later
+          // }
+        }
+      );
+    }
 
     // Getting some weird bugs because of clean ups
     // I still don't understand why
@@ -250,54 +208,13 @@ function ViewChat() {
     // };
   }, [currentConversationId]);
 
-  const blockUser = async (currentStatus) => {
-    try {
-      setIsLoading(true);
-      const auth = JSON.parse(localStorage.getItem("user"));
-
-      if (!auth || !auth.token) {
-        throw new Error("No auth token found");
-      }
-
-      const requestBody = {
-        block: !currentStatus,
-      };
-
-      const response = await fetch(
-        `${BACKEND_URL}/user/blockUser/${params.id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify(requestBody),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${auth.token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `Network response was not ok: ${response.status} - ${
-            response.statusText
-          }. Error: ${JSON.stringify(errorData)}`
-        );
-      }
-
-      const result = await response.json();
-
-      // Update the state with the new block status
-      setFriend((prevFriend) => ({
-        ...prevFriend,
-        blockStatus: !currentStatus,
-      }));
-    } catch (error) {
-      console.error("Fetch error: ", error);
-      alert(`Failed to update user status. Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (userBlockList?.includes(friend._id)) {
+      setIsBlocked(true);
+    } else {
+      setIsBlocked(false);
     }
-  };
+  }, [userBlockList, friend]);
 
   return (
     <>
@@ -307,16 +224,32 @@ function ViewChat() {
             <div className="my-col-11">
               <ul>
                 <li>
-                  <img src={profile3} alt="" />
+                  {userBlockList?.includes(friend._id) ||
+                  friend.blockedUsers?.includes(auth.user.id) ? (
+                    <>
+                      <img src={blockProfile} alt="" />
+                    </>
+                  ) : (
+                    <>
+                      <img src={profile3} alt="" />
+                    </>
+                  )}
                 </li>
                 <li>
-                  <UserNameWithStatus
-                    userName={friend.userName}
-                    isOnline={
-                      onlineUsers && onlineUsers[friend.id] ? true : false
-                    }
-                  />
-                  <span>{isFriendTyping ? "Typing...." : " "}</span>
+                  <>
+                    {console.log("friend: ", friend)}
+                    {console.log("userBlockList: ", userBlockList)}
+
+                    <UserNameWithStatus
+                      userName={friend.userName}
+                      isOnline={
+                        onlineUsers && onlineUsers[friend._id] ? true : false
+                      }
+                      recieverId={friend._id}
+                      recieverBlockUsers={friend.blockedUsers}
+                      userBlockList={userBlockList}
+                    />
+                  </>
                 </li>
               </ul>
             </div>
@@ -332,7 +265,9 @@ function ViewChat() {
                     <PopoverArrow />
                     <PopoverCloseButton color="black" />
                     <PopoverBody color="black">
-                      <button>Block</button>
+                      <button onClick={toggleBlockUser}>
+                        {isBlocked ? "Unblock User" : "Block User"}
+                      </button>
                     </PopoverBody>
                   </PopoverContent>
                 </Popover>
@@ -369,7 +304,7 @@ function ViewChat() {
                       size="md"
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      disabled={sendMessageLoading}
+                      disabled={sendMessageLoading || isBlocked}
                       onKeyUp={handleTypingStatus}
                     />
                   </div>
@@ -385,7 +320,7 @@ function ViewChat() {
                         <Spinner size="xs" />
                       </Box>
                     ) : (
-                      <button type="submit">
+                      <button type="submit" disabled={isBlocked}>
                         <i className="fa-regular fa-paper-plane"></i>
                       </button>
                     )}
