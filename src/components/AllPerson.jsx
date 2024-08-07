@@ -12,7 +12,6 @@ import { socket } from "../socket";
 
 function AllPerson({ onlineUsers, allUser, userBlockList }) {
   const skeltonArr = new Array(8).fill(1);
-  // const [allUser, setAllUser] = useState([]);
   const [logged, setLogged] = useState(null);
   const [user, setUser] = useState("");
 
@@ -22,25 +21,15 @@ function AllPerson({ onlineUsers, allUser, userBlockList }) {
 
   const navigate = useNavigate();
 
-  // Effect for, all users that are in db
+  // HAVE THE LOGIC TO SCROLL TO THE BOTTOM OF USRE LIST
+  // IT IS FOR WHEN A NEW USER JOINS
+  // const scrollToBottom = () => {
+  //   endUser.current?.scrollIntoView({ behavior: "smooth" });
+  // };
+
   // useEffect(() => {
-  //   const auth = JSON.parse(localStorage.getItem("user"));
-  //   socket.on("getAllUsers", ({ fetchedAllUsers }) => {
-  //     // Filter out the logged-in user
-  //     const filteredUsers = fetchedAllUsers.filter(
-  //       (user) => user._id !== auth.user.id
-  //     );
-  //     setAllUser(filteredUsers);
-  //   });
-  // }, []);
-
-  const scrollToBottom = () => {
-    endUser.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [allUser]);
+  //   scrollToBottom();
+  // }, [allUser]);
 
   const navigateChat = (id) => {
     navigate(`/chat/${id}`);
@@ -100,7 +89,7 @@ function AllPerson({ onlineUsers, allUser, userBlockList }) {
             </div>
           ))
         )}
-        <div ref={endUser} />
+        {/* <div ref={endUser} /> */}
       </div>
     </>
   );

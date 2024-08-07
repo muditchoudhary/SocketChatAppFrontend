@@ -23,10 +23,11 @@ import { onSendMessage } from "../apis/conversationApis";
 import { socket } from "../socket";
 import UserNameWithStatus from "./UserNameWithStatus";
 import { useGlobalLoadingContext } from "../hooks/useGlobalLoadingContext";
+import ConversationSkeleton from "./ConversationSkeleton";
 
 function ViewChat() {
   const [friend, setFriend] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [senderId, setSenderId] = useState();
   const [receiverId, setReceiverId] = useState();
@@ -191,14 +192,14 @@ function ViewChat() {
     socket.on("getSingleUser", handleSingleUser);
 
     if (receiverId) {
+      dispatch({ type: "LOADING", payload: true });
       socket.emit(
         "singleUser",
         { receiverId: receiverId, senderId: senderId },
         ({ acknowledgement }) => {
-          // if (acknowledgement.success === true) {
-          //   console.log("trye");
-          //to done later
-          // }
+          if (acknowledgement.success === true) {
+            dispatch({ type: "NOT_LOADING", payload: false });
+          }
         }
       );
     }
@@ -221,6 +222,14 @@ function ViewChat() {
       setIsBlocked(false);
     }
   }, [userBlockList, friend]);
+
+  const scrollToBottom = () => {
+    endMessage.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <>
@@ -288,7 +297,8 @@ function ViewChat() {
 
         <div className="chatcmn" style={{ backgroundImage: `url(${backbg})` }}>
           {isLoading ? (
-            <h1>Loading...</h1>
+            // <h1>Loading...</h1>
+            <ConversationSkeleton />
           ) : (
             <>
               <Conversation
